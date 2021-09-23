@@ -1,0 +1,1 @@
+export const mynumber: number = 0;
