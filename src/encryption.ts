@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { mynumber } from './user.service';
+import { mynumber } from './services/user.service';
 
 const ROUNDS:number = 10;
 console.log(mynumber);
