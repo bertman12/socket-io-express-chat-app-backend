@@ -1,13 +1,16 @@
+/** Initialize socketio server and setup middleware */
 import cors from 'cors';
 import express from 'express';
 import { createServer } from 'http';
 import { Server, ServerOptions, Socket } from "socket.io";
 import { instrument } from '@socket.io/admin-ui';
 import MessageHandler from './registerMessageHandlers';
-import ConnectionManager from './connectionManager';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import DatabaseService from './services/database.service';
 
-const app = express();
+export const dbService = new DatabaseService();
+export const app = express();
+
 const httpServer = createServer(app);
 const serverOptions: Partial<ServerOptions> = {
   cors: {
@@ -27,14 +30,18 @@ instrument(io, {
 app.use(cors());
 app.use(express.json());
 
-const connectionManager = new ConnectionManager(app);
-connectionManager.connect();
+// export const connectionManager = new ConnectionManager();
 
-io.use((socket, next)=>{
-  console.log('SocketID: ', socket.id);
+// connectionManager.connectToDatabase();
 
-  next();
-});
+// io.use((socket, next)=>{
+//   console.log('SocketID: ', socket.id);
+//   next();
+// });
+io.use(() => {
+  dbService.getConnection();
+})
+
 
 io.on('connection', (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) => {
   const messageHandler = new MessageHandler(io, socket);

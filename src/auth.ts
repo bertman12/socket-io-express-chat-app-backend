@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken';
 
-export function generateToken(){
-    console.log(jwt);
-}
+// export function generateToken(){
+//     console.log(jwt);
+// }

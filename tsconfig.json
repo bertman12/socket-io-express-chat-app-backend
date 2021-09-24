@@ -15,6 +15,7 @@
         "alwaysStrict": true,
         "noUnusedLocals": true,
         "watch": true,
+        "strict": true
     },
     "exclude": ["node_modules"],
     "include": ["src/**/*"]
