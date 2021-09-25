@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -11,6 +20,7 @@ const socket_io_1 = require("socket.io");
 const admin_ui_1 = require("@socket.io/admin-ui");
 const registerMessageHandlers_1 = __importDefault(require("./registerMessageHandlers"));
 const database_service_1 = __importDefault(require("./services/database.service"));
+const _main_1 = __importDefault(require("./routes/_main"));
 exports.dbService = new database_service_1.default();
 exports.app = express_1.default();
 const httpServer = http_1.createServer(exports.app);
@@ -27,12 +37,23 @@ admin_ui_1.instrument(io, {
 });
 exports.app.use(cors_1.default());
 exports.app.use(express_1.default.json());
-io.use(() => {
-    exports.dbService.getConnection();
+exports.app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    yield exports.dbService.getConnection();
+    next();
+    console.log('All endpoints have been satisified!');
+    exports.dbService.releaseConnection();
+}));
+exports.app.use('', _main_1.default);
+io.use((socket, next) => {
+    console.log('SocketID: ', socket.id);
+    next();
 });
 io.on('connection', (socket) => {
     const messageHandler = new registerMessageHandlers_1.default(io, socket);
     messageHandler.observe();
+    socket.on('disconnect', () => {
+        console.log('Socket has disconnected, SocketID: ', socket.id);
+    });
 });
 httpServer.listen(port, () => {
     console.log(`listening on *:${port}`);

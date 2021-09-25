@@ -7,6 +7,7 @@ import { instrument } from '@socket.io/admin-ui';
 import MessageHandler from './registerMessageHandlers';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import DatabaseService from './services/database.service';
+import rootRoute from './routes/_main'
 
 export const dbService = new DatabaseService();
 export const app = express();
@@ -30,23 +31,31 @@ instrument(io, {
 app.use(cors());
 app.use(express.json());
 
-// export const connectionManager = new ConnectionManager();
+app.use(async (req, res, next)=>{
+  await dbService.getConnection();
+  next();
+  console.log('All endpoints have been satisified!');
+  dbService.releaseConnection();
+});
 
-// connectionManager.connectToDatabase();
+app.use('',rootRoute);
 
-// io.use((socket, next)=>{
-//   console.log('SocketID: ', socket.id);
-//   next();
-// });
-io.use(() => {
-  dbService.getConnection();
-})
+//When client connects to the site, connect to the database.
+io.use((socket,next) => {
+  console.log('SocketID: ',socket.id);
+  next();
+});
 
-
-io.on('connection', (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>) => {
+io.on('connection', (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,) => {
   const messageHandler = new MessageHandler(io, socket);
   messageHandler.observe();
+
+  socket.on('disconnect', ()=> {
+    console.log('Socket has disconnected, SocketID: ', socket.id);
+    // dbService.releaseConnection();
+  });
 });
+
 
 httpServer.listen(port, () => {
   console.log(`listening on *:${port}`);
