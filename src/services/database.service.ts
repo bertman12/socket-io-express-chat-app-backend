@@ -1,7 +1,7 @@
 /** Get and release database connections and execute queries */
 // import { SqlOptions } from "../common/types/sqlOptions";
 import mysql from 'mysql2/promise';
-import ConnectionManager from "../connectionManager";
+import ConnectionManager from "./connectionManager";
 export class DatabaseService{
     constructor(){}
     private _connectionManager:ConnectionManager = new ConnectionManager();

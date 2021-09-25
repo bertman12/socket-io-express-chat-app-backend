@@ -12,26 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DatabaseService = void 0;
-const connectionManager_1 = __importDefault(require("./connectionManager"));
-class DatabaseService {
-    constructor() {
-        this._connectionManager = new connectionManager_1.default();
+const express_1 = require("express");
+const __1 = require("..");
+const messages_1 = __importDefault(require("./messages"));
+const router = express_1.Router();
+router.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const [data] = yield __1.dbService.execute(`SELECT * FROM messages`);
+        res.json({ Data: data, message: 'Good service!' });
     }
-    getConnection() {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log('Connecting to database.');
-            this._connection = yield this._connectionManager.connectToDatabase();
-        });
+    catch (error) {
+        console.error(error);
     }
-    releaseConnection() {
-        this._connectionManager.forceDisconnect();
-    }
-    execute(sql, data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield this._connection.query(sql);
-        });
-    }
-}
-exports.DatabaseService = DatabaseService;
-exports.default = DatabaseService;
+}));
+router.use('', messages_1.default);
+exports.default = router;

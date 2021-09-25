@@ -18,9 +18,9 @@ const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const socket_io_1 = require("socket.io");
 const admin_ui_1 = require("@socket.io/admin-ui");
-const registerMessageHandlers_1 = __importDefault(require("./registerMessageHandlers"));
+const registerMessageHandlers_1 = __importDefault(require("./events/registerMessageHandlers"));
 const database_service_1 = __importDefault(require("./services/database.service"));
-const _main_1 = __importDefault(require("./routes/_main"));
+const _root_1 = __importDefault(require("./routes/_root"));
 exports.dbService = new database_service_1.default();
 exports.app = express_1.default();
 const httpServer = http_1.createServer(exports.app);
@@ -43,7 +43,7 @@ exports.app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     console.log('All endpoints have been satisified!');
     exports.dbService.releaseConnection();
 }));
-exports.app.use('', _main_1.default);
+exports.app.use('', _root_1.default);
 io.use((socket, next) => {
     console.log('SocketID: ', socket.id);
     next();

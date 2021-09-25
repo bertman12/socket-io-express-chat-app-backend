@@ -4,10 +4,10 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server, ServerOptions, Socket } from "socket.io";
 import { instrument } from '@socket.io/admin-ui';
-import MessageHandler from './registerMessageHandlers';
+import MessageHandler from './events/registerMessageHandlers';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import DatabaseService from './services/database.service';
-import rootRoute from './routes/_main'
+import rootRoute from './routes/_root'
 
 export const dbService = new DatabaseService();
 export const app = express();
@@ -52,7 +52,6 @@ io.on('connection', (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultE
 
   socket.on('disconnect', ()=> {
     console.log('Socket has disconnected, SocketID: ', socket.id);
-    // dbService.releaseConnection();
   });
 });
 

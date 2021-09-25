@@ -13,9 +13,9 @@ export class ConnectionManager{
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        // waitForConnections: true,
-        // connectionLimit: 1,
-        // queueLimit: 0
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0
     });
 
     forceDisconnect(){
@@ -33,8 +33,8 @@ export class ConnectionManager{
             try {
                 console.log('Attempting connection...');
                 this._connection = await pool.getConnection();
-                this._connection.config.namedPlaceholders = true;
                 console.log('Connected!');
+                this._connection.config.namedPlaceholders = true;
 
                 await this._connection.query('SET SESSION sql_mode = "TRADITIONAL"');
                 await this._connection.query(`SET time_zone = '-8:00'`);
