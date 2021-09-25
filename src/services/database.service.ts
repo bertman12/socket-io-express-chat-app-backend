@@ -8,7 +8,6 @@ export class DatabaseService{
     private _connection!: mysql.PoolConnection;
 
     async getConnection(){
-        console.log('Connecting to database.');  
         this._connection = await this._connectionManager.connectToDatabase();
     }
 

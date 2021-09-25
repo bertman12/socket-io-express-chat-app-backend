@@ -20,7 +20,6 @@ class DatabaseService {
     }
     getConnection() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log('Connecting to database.');
             this._connection = yield this._connectionManager.connectToDatabase();
         });
     }

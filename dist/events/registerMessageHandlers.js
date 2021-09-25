@@ -21,7 +21,7 @@ class MessageHandler {
                 console.log('new message = ', message.content);
                 this.io.emit('chat-message', message);
                 yield index_1.dbService.getConnection();
-                const data = yield index_1.dbService.execute(`SELECT * FROM messages`);
+                const [data] = yield index_1.dbService.execute(`SELECT * FROM messages`);
                 console.log(data);
             }));
             this.socket.on('chat-message-edited', (message) => {

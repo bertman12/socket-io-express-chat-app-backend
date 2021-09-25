@@ -1,7 +1,7 @@
 /** Listen for chat message events, emit them to other clients and store them in the database through a service */
 import { Server, Socket } from "socket.io";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
-import { Message } from "../common/types/message";
+import { Message } from "../common/models/message";
 import { dbService } from "../index";
 
 export default class MessageHandler{
@@ -14,7 +14,7 @@ export default class MessageHandler{
                 console.log('new message = ', message.content);
                 this.io.emit('chat-message', message);
                 await dbService.getConnection();
-                const data = await dbService.execute(`SELECT * FROM messages`);
+                const [data] =  await dbService.execute(`SELECT * FROM messages`);
                 console.log(data);
             });
             this.socket.on('chat-message-edited', (message: Message) => {

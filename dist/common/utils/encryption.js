@@ -12,19 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const __1 = require("..");
-const messages_1 = __importDefault(require("./messages"));
-const router = express_1.Router();
-router.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const [data] = yield __1.dbService.execute(`SELECT * FROM messages`);
-        res.json({ Data: data, message: 'Good service!' });
-        console.log(data);
-    }
-    catch (error) {
-        console.error(error);
-    }
-}));
-router.use('', messages_1.default);
-exports.default = router;
+exports.comparePassword = exports.encryptPassword = void 0;
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const _ROUNDS = 10;
+function encryptPassword(password) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield bcrypt_1.default.hash(password, _ROUNDS);
+    });
+}
+exports.encryptPassword = encryptPassword;
+function comparePassword(password) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let userPass = '';
+        const isValid = yield bcrypt_1.default.compare(password, userPass);
+        return isValid;
+    });
+}
+exports.comparePassword = comparePassword;

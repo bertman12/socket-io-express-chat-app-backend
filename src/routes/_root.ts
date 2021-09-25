@@ -8,11 +8,11 @@ router.get('', async  (req, res) =>{
     try {
         const [data] =  await dbService.execute(`SELECT * FROM messages`);
         res.json({Data: data, message:'Good service!'});
+        console.log(data);
     } catch (error) {
         console.error(error);        
     }
 });
 
 router.use('',messageRoute);
-
 export default router;

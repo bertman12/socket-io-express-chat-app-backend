@@ -7,10 +7,10 @@ import { instrument } from '@socket.io/admin-ui';
 import MessageHandler from './events/registerMessageHandlers';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import DatabaseService from './services/database.service';
-import rootRoute from './routes/_root'
+import mainRoute from './routes/_root'
 
 export const dbService = new DatabaseService();
-const app = express();
+export const app = express();
 
 const httpServer = createServer(app);
 const serverOptions: Partial<ServerOptions> = {
@@ -37,22 +37,23 @@ app.use(async (req, res, next)=>{
   console.log('All endpoints have been satisified!');
   dbService.releaseConnection();
 });
+app.use('', mainRoute);
 
-app.use('',rootRoute);
 
 //When client connects to the site, connect to the database.
 io.use((socket,next) => {
   console.log('SocketID: ',socket.id);
-  next();
-});
-
-io.on('connection', (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,) => {
   const messageHandler = new MessageHandler(io, socket);
   messageHandler.observe();
-
+  // next();
   socket.on('disconnect', ()=> {
     console.log('Socket has disconnected, SocketID: ', socket.id);
   });
+});
+
+io.on('connection', (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,) => {
+
+  console.log('Socket connected!');
 });
 
 
