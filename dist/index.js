@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.app = exports.dbService = void 0;
+exports.dbService = void 0;
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
@@ -22,8 +22,8 @@ const registerMessageHandlers_1 = __importDefault(require("./events/registerMess
 const database_service_1 = __importDefault(require("./services/database.service"));
 const _root_1 = __importDefault(require("./routes/_root"));
 exports.dbService = new database_service_1.default();
-exports.app = express_1.default();
-const httpServer = http_1.createServer(exports.app);
+const app = express_1.default();
+const httpServer = http_1.createServer(app);
 const serverOptions = {
     cors: {
         origin: 'http://localhost:4200',
@@ -35,15 +35,15 @@ const port = 3000;
 admin_ui_1.instrument(io, {
     auth: false
 });
-exports.app.use(cors_1.default());
-exports.app.use(express_1.default.json());
-exports.app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+app.use(cors_1.default());
+app.use(express_1.default.json());
+app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     yield exports.dbService.getConnection();
     next();
     console.log('All endpoints have been satisified!');
     exports.dbService.releaseConnection();
 }));
-exports.app.use('', _root_1.default);
+app.use('', _root_1.default);
 io.use((socket, next) => {
     console.log('SocketID: ', socket.id);
     next();

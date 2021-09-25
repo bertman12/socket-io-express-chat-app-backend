@@ -10,7 +10,7 @@ import DatabaseService from './services/database.service';
 import rootRoute from './routes/_root'
 
 export const dbService = new DatabaseService();
-export const app = express();
+const app = express();
 
 const httpServer = createServer(app);
 const serverOptions: Partial<ServerOptions> = {
