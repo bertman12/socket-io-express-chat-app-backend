@@ -43,20 +43,37 @@ app.use('', mainRoute);
 //When client connects to the site, connect to the database.
 io.use((socket,next) => {
   console.log('SocketID: ',socket.id);
-  const messageHandler = new MessageHandler(io, socket);
-  messageHandler.observe();
-  // next();
+  
+  next();
   socket.on('disconnect', ()=> {
     console.log('Socket has disconnected, SocketID: ', socket.id);
   });
 });
 
+// TODO: Whenever any event happens, setup a connection to the database
 io.on('connection', (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,) => {
-
+  console.log('Socket events registered: ', socket.eventNames());
+  const messageHandler = new MessageHandler(io, socket);
+  messageHandler.register();
   console.log('Socket connected!');
+  console.log('Socket events registered: ', socket.eventNames());
 });
 
 
 httpServer.listen(port, () => {
   console.log(`listening on *:${port}`);
 });
+
+
+
+// const registeredEvents = [
+//   {name: 'test', eventHandler: function handler(...args: any[]){}, socket: Socket, data: {}}
+// ];
+
+// io.use((socket, next) => {
+//   registeredEvents.forEach((event)=>{
+//     socket.on(event.name, (data:any)=>{
+//       event.eventHandler(data, socket)
+//     })
+//   });
+// });

@@ -15,23 +15,33 @@ class MessageHandler {
         this.io = io;
         this.socket = socket;
     }
-    observe() {
+    register() {
         try {
             this.socket.on('chat-message', (message) => __awaiter(this, void 0, void 0, function* () {
                 console.log('new message = ', message.content);
                 this.io.emit('chat-message', message);
                 yield index_1.dbService.getConnection();
+                const SQL = `INSERT INTO messages (content) VALUES ('ay')`;
+                console.log('adding message');
+                yield index_1.dbService.execute(SQL);
+                console.log('message added');
                 const [data] = yield index_1.dbService.execute(`SELECT * FROM messages`);
-                console.log(data);
+                console.log(data[0].content);
             }));
-            this.socket.on('chat-message-edited', (message) => {
+            this.socket.on('chat-message-edited', (message) => __awaiter(this, void 0, void 0, function* () {
                 console.log('new edited message = ', message.content);
                 this.io.emit('chat-message-edited', message);
-            });
-            this.socket.on('chat-message-deleted', (message) => {
+                yield index_1.dbService.getConnection();
+                const [data] = yield index_1.dbService.execute(`SELECT * FROM messages`);
+                console.log(data[0].content);
+            }));
+            this.socket.on('chat-message-deleted', (message) => __awaiter(this, void 0, void 0, function* () {
                 console.log('deleted message = ', message.content);
                 this.io.emit('chat-message-deleted', message);
-            });
+                yield index_1.dbService.getConnection();
+                const [data] = yield index_1.dbService.execute(`SELECT * FROM messages`);
+                console.log(data[0].content);
+            }));
         }
         catch (error) {
             console.log(error);

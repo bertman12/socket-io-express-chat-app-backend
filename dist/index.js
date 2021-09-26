@@ -46,14 +46,17 @@ exports.app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 exports.app.use('', _root_1.default);
 io.use((socket, next) => {
     console.log('SocketID: ', socket.id);
-    const messageHandler = new registerMessageHandlers_1.default(io, socket);
-    messageHandler.observe();
+    next();
     socket.on('disconnect', () => {
         console.log('Socket has disconnected, SocketID: ', socket.id);
     });
 });
 io.on('connection', (socket) => {
+    console.log('Socket events registered: ', socket.eventNames());
+    const messageHandler = new registerMessageHandlers_1.default(io, socket);
+    messageHandler.register();
     console.log('Socket connected!');
+    console.log('Socket events registered: ', socket.eventNames());
 });
 httpServer.listen(port, () => {
     console.log(`listening on *:${port}`);

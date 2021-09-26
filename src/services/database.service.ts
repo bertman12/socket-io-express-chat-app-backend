@@ -2,6 +2,7 @@
 // import { SqlOptions } from "../common/types/sqlOptions";
 import mysql from 'mysql2/promise';
 import ConnectionManager from "./connectionManager";
+
 export class DatabaseService{
     constructor(){}
     private _connectionManager:ConnectionManager = new ConnectionManager();
@@ -28,7 +29,12 @@ export class DatabaseService{
     // }
 
     async execute(sql:string, data?:any){
-        return await this._connection.query(sql);
+        if(data){
+            return await this._connection.query(sql, data);
+        }
+        else{
+            return await this._connection.query(sql);
+        }
     }
 
 }
