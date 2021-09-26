@@ -28,15 +28,25 @@ export class DatabaseService{
     //     console.log(SQL);    
     // }
 
-    async execute(sql:string, data?:any){
-        if(data){
-            return await this._connection.query(sql, data);
+    /** if no connection exists, then set up connection then execute query 
+     * TODO implement TRY-CATCH, always return the error array 
+    */
+
+    async execute(sql:string, data?:{}){
+        if(!this._connection){
+            await this.getConnection();
+            await this.execute(sql, data);
         }
         else{
-            return await this._connection.query(sql);
+            if(data){
+                return await this._connection.query(sql, data);
+            }
+            else{
+                return await this._connection.query(sql);
+            }
         }
+        return ['QUERY FAILED'];
     }
-
 }
 
 export default DatabaseService;

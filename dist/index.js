@@ -52,11 +52,9 @@ io.use((socket, next) => {
     });
 });
 io.on('connection', (socket) => {
-    console.log('Socket events registered: ', socket.eventNames());
     const messageHandler = new registerMessageHandlers_1.default(io, socket);
     messageHandler.register();
     console.log('Socket connected!');
-    console.log('Socket events registered: ', socket.eventNames());
 });
 httpServer.listen(port, () => {
     console.log(`listening on *:${port}`);

@@ -52,11 +52,11 @@ io.use((socket,next) => {
 
 // TODO: Whenever any event happens, setup a connection to the database
 io.on('connection', (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>,) => {
-  console.log('Socket events registered: ', socket.eventNames());
+  // console.log('Socket events registered: ', socket.eventNames());
   const messageHandler = new MessageHandler(io, socket);
   messageHandler.register();
   console.log('Socket connected!');
-  console.log('Socket events registered: ', socket.eventNames());
+  // console.log('Socket events registered: ', socket.eventNames());
 });
 
 

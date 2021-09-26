@@ -28,12 +28,19 @@ class DatabaseService {
     }
     execute(sql, data) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (data) {
-                return yield this._connection.query(sql, data);
+            if (!this._connection) {
+                yield this.getConnection();
+                yield this.execute(sql, data);
             }
             else {
-                return yield this._connection.query(sql);
+                if (data) {
+                    return yield this._connection.query(sql, data);
+                }
+                else {
+                    return yield this._connection.query(sql);
+                }
             }
+            return ['QUERY FAILED'];
         });
     }
 }
