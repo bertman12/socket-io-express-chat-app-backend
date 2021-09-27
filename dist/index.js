@@ -17,7 +17,6 @@ const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const socket_io_1 = require("socket.io");
-const admin_ui_1 = require("@socket.io/admin-ui");
 const registerMessageHandlers_1 = __importDefault(require("./events/registerMessageHandlers"));
 const database_service_1 = __importDefault(require("./services/database.service"));
 const _root_1 = __importDefault(require("./routes/_root"));
@@ -32,20 +31,16 @@ const serverOptions = {
 };
 const io = new socket_io_1.Server(httpServer, serverOptions);
 const port = 3000;
-admin_ui_1.instrument(io, {
-    auth: false
-});
 exports.app.use(cors_1.default());
 exports.app.use(express_1.default.json());
-exports.app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.app.use('', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     yield exports.dbService.getConnection();
     next();
     console.log('All endpoints have been satisified!');
     exports.dbService.releaseConnection();
-}));
-exports.app.use('', _root_1.default);
+}), _root_1.default);
 io.use((socket, next) => {
-    console.log('SocketID: ', socket.id);
+    console.log('Socket connected! SocketID: ', socket.id);
     next();
     socket.on('disconnect', () => {
         console.log('Socket has disconnected, SocketID: ', socket.id);
@@ -54,7 +49,6 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
     const messageHandler = new registerMessageHandlers_1.default(io, socket);
     messageHandler.register();
-    console.log('Socket connected!');
 });
 httpServer.listen(port, () => {
     console.log(`listening on *:${port}`);

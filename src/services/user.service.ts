@@ -1,1 +1,2 @@
-export const mynumber: number = 0;
+import encrypter from '../common/utils/encryption';
+encrypter.encryptPassword('');

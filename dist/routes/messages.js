@@ -5,6 +5,4 @@ const router = express_1.Router();
 router.get('/all', (req, res) => {
     res.json('hiiiii');
 });
-router.post('', (req, res) => {
-});
 exports.default = router;

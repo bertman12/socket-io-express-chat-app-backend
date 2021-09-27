@@ -28,22 +28,28 @@ export class DatabaseService{
     //     console.log(SQL);    
     // }
 
-    /** if no connection exists, then set up connection then execute query 
+    /** 
+     * If no connection exists, then set up connection then execute query.
+     * This should only happen when making queries for socketio triggered events. 
      * TODO implement TRY-CATCH, always return the error array 
     */
 
     async execute(sql:string, data?:{}){
-        if(!this._connection){
-            await this.getConnection();
-            await this.execute(sql, data);
-        }
-        else{
-            if(data){
-                return await this._connection.query(sql, data);
+        try {
+            if(!this._connection){
+                await this.getConnection();
+                await this.execute(sql, data);
             }
             else{
-                return await this._connection.query(sql);
+                if(data){
+                    return await this._connection.query(sql, data);
+                }
+                else{
+                    return await this._connection.query(sql);
+                }
             }
+        } catch (error) {
+            console.error(error);
         }
         return ['QUERY FAILED'];
     }
