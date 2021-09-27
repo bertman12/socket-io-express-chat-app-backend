@@ -37,7 +37,6 @@ exports.app.use('', (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     yield exports.dbService.getConnection();
     next();
     console.log('All endpoints have been satisified!');
-    exports.dbService.releaseConnection();
 }), _root_1.default);
 io.use((socket, next) => {
     console.log('Socket connected! SocketID: ', socket.id);

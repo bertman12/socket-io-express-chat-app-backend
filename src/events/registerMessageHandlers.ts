@@ -36,7 +36,11 @@ export default class MessageHandler{
             this.socket.on('chat-message-deleted', async (message: Message) => {
                 console.log('deleted message = ', message.content);
                 this.io.emit('chat-message-deleted', message);
+                const SQL = `DELETE FROM messages WHERE id = :id;`;
+                const data = {id: message.id}
+                await dbService.execute(SQL, data);
             });
+
         } catch (error) {
             console.log(error);    
         }

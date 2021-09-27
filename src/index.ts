@@ -10,7 +10,7 @@ import { Server, ServerOptions, Socket } from "socket.io";
 import MessageHandler from './events/registerMessageHandlers';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import DatabaseService from './services/database.service';
-import mainRoute from './routes/_root';
+import _root from './routes/_root';
 
 export const dbService = new DatabaseService();
 export const app = express();
@@ -34,8 +34,7 @@ app.use('', async (req, res, next)=>{
   await dbService.getConnection();
   next();
   console.log('All endpoints have been satisified!');
-  dbService.releaseConnection();
-}, mainRoute);
+}, _root);
 
 //When client connects to the site, connect to the database.
 io.use((socket,next) => {

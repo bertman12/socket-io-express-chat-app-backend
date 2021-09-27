@@ -1,25 +1,24 @@
 import { Router } from "express";
-import { dbService } from "..";
+import { dbService } from "../index";
 import messageRoute from './messages';
-
+import authorizeRoute from './authorize';
+import userLoginRoute from './login';
 const router:Router = Router();
-const routes:Router[] = [messageRoute];
-
-//get all messages
-router.get('', async  (req, res) =>{
-    // try {
-        const [data] =  await dbService.execute(`SELECT * FROM messages`);
-        res.json(data);
-        console.log(data);
-    // } catch (error) {
-    //     console.error(error);        
-    // }
-});
+const routes:Router[] = 
+[
+    //public endpoints
+    messageRoute,
+    //private endpoints
+    authorizeRoute,
+    userLoginRoute
+];
 
 //move to next middleware!
-router.use('',(req, res, next) => {
-    next();
-}, ...routes);
+router.use(...routes, (req, res, next)=> {
+    // console.log('Main route middleware commencing!');
+    // next();
+    console.log('End of main route...')
+    dbService.releaseConnection();
+});
 
-// router.use('',messageRoute);
 export default router;
