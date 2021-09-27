@@ -16,8 +16,8 @@ export default class MessageHandler{
             this.socket.on('chat-message', async (message: Message)=>{
                 this.io.emit('chat-message', message);
                 //for the time property of the message i can use the sql Date() function as the default value for the row
-                const SQL = `INSERT INTO messages (userId, serverId, roomId, content) VALUES (:userId, :serverId, :roomId, :content);`;
-                const data = {userId: message.userId, serverId: message.serverId, roomId: message.roomId, content: message.content};
+                const SQL = `INSERT INTO messages (userId, serverId, roomId, content, time) VALUES (:userId, :serverId, :roomId, :content, :time);`;
+                const data = {userId: message.userId, serverId: message.serverId, roomId: message.roomId, content: message.content, time: message.time};
                 await dbService.execute(SQL, data);
 
                 //have socket emit an event and pass the sql query in there. 

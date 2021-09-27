@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { dbService } from "../index";
 
 const router = Router();
 

@@ -16,10 +16,13 @@ const express_1 = require("express");
 const __1 = require("..");
 const messages_1 = __importDefault(require("./messages"));
 const router = express_1.Router();
+const routes = [messages_1.default];
 router.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const [data] = yield __1.dbService.execute(`SELECT * FROM messages`);
     res.json(data);
     console.log(data);
 }));
-router.use('', messages_1.default);
+router.use('', (req, res, next) => {
+    next();
+}, ...routes);
 exports.default = router;

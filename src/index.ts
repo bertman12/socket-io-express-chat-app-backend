@@ -29,6 +29,7 @@ const port: number = 3000;
 app.use(cors());
 app.use(express.json());
 
+//TODO: add an array of routes then use the array as the last parameter in the middleware function
 app.use('', async (req, res, next)=>{
   await dbService.getConnection();
   next();

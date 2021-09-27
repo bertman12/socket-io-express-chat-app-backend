@@ -3,6 +3,7 @@ import { dbService } from "..";
 import messageRoute from './messages';
 
 const router:Router = Router();
+const routes:Router[] = [messageRoute];
 
 //get all messages
 router.get('', async  (req, res) =>{
@@ -16,5 +17,9 @@ router.get('', async  (req, res) =>{
 });
 
 //move to next middleware!
-router.use('',messageRoute);
+router.use('',(req, res, next) => {
+    next();
+}, ...routes);
+
+// router.use('',messageRoute);
 export default router;

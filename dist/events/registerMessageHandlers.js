@@ -19,8 +19,8 @@ class MessageHandler {
         try {
             this.socket.on('chat-message', (message) => __awaiter(this, void 0, void 0, function* () {
                 this.io.emit('chat-message', message);
-                const SQL = `INSERT INTO messages (userId, serverId, roomId, content) VALUES (:userId, :serverId, :roomId, :content);`;
-                const data = { userId: message.userId, serverId: message.serverId, roomId: message.roomId, content: message.content };
+                const SQL = `INSERT INTO messages (userId, serverId, roomId, content, time) VALUES (:userId, :serverId, :roomId, :content, :time);`;
+                const data = { userId: message.userId, serverId: message.serverId, roomId: message.roomId, content: message.content, time: message.time };
                 yield index_1.dbService.execute(SQL, data);
             }));
             this.socket.on('chat-message-edited', (message) => __awaiter(this, void 0, void 0, function* () {
