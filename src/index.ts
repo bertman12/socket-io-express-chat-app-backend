@@ -1,7 +1,8 @@
-/** Desc: Initialize socketio server and setup middleware
+/** Desc: Initialize socketio server and middleware
  * TODO
  * Implement emitting events only to clients in the room the event was generated in for the message events
  * Add in the socketio admin dashboard later
+ * Figure out how to make the dist folder delete unused files without me having to do it manually
  */
 import cors from 'cors';
 import express from 'express';
@@ -10,15 +11,15 @@ import { Server, ServerOptions, Socket } from "socket.io";
 import MessageHandler from './events/registerMessageHandlers';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import DatabaseService from './services/database.service';
-import _root from './routes/_root';
+import routes from './routes/_root';
 
-export const dbService = new DatabaseService();
-export const app = express();
+export const dbService: DatabaseService = new DatabaseService();
+export const app: express.Express = express();
 
 const httpServer = createServer(app);
 const serverOptions: Partial<ServerOptions> = {
   cors: {
-    origin: 'http://localhost:4200', //client-side
+    origin: 'http://localhost:4200', //client-url
     methods: ['GET', 'POST']      
     }
 }
@@ -30,14 +31,13 @@ app.use(cors());
 app.use(express.json());
 
 //TODO: add an array of routes then use the array as the last parameter in the middleware function
-app.use('', async (req, res, next)=>{
+app.use(async (req, res, next)=>{
   await dbService.getConnection();
   next();
-  console.log('All endpoints have been satisified!');
-}, _root);
+  dbService.releaseConnection();
+},...routes);
 
-//When client connects to the site, connect to the database.
-io.use((socket,next) => {
+io.use((socket, next) => {
   console.log('Socket connected! SocketID: ',socket.id);
   next();
   socket.on('disconnect', ()=> {
@@ -55,8 +55,6 @@ httpServer.listen(port, () => {
   console.log(`listening on *:${port}`);
 });
 
-
-
 // const registeredEvents = [
 //   {name: 'test', eventHandler: function handler(...args: any[]){}, socket: Socket, data: {}}
 // ];
@@ -69,5 +67,3 @@ httpServer.listen(port, () => {
 //   });
 // });
 
-
-  // console.log('Socket events registered: ', socket.eventNames());

@@ -12,32 +12,23 @@ export class DatabaseService{
         this._connection = await this._connectionManager.connectToDatabase();
     }
 
+    /**
+     * I could maybe add my a function that returns a promise to see if all sql queries are done before running release connection
+     * All queries work anyways so I'm not sure why my console.logs are out of place.
+     * await queriesDone(); ... continue
+     */
     releaseConnection(){
         this._connectionManager.forceDisconnect();
     }
 
-    // query(sqlOptions:SqlOptions){
-    //     // const selections = args.join(',').toUpperCase();
-    //     let options:string = 'NO SELECTIONS';
-    //     if(sqlOptions.selections.length > 1){
-    //         options = sqlOptions.selections.join(',');
-    //     } else{
-    //         options = sqlOptions.selections[0];
-    //     }
-    //     const SQL:string = `${sqlOptions.action} ${options} FROM ${sqlOptions.table}${sqlOptions.condition ? ` WHERE ${sqlOptions.condition}`: ''}`;
-    //     console.log(SQL);    
-    // }
-
     /** 
-     * If no connection exists, then set up connection then execute query.
-     * This should only happen when making queries for socketio triggered events. 
-     * TODO implement TRY-CATCH, always return the error array 
+     * Creates a connection when making queries for socketio triggered events, then executes the query. 
     */
-
     async execute(sql:string, data?:{}){
         try {
             if(!this._connection){
                 await this.getConnection();
+                console.log('Reconnected!');
                 await this.execute(sql, data);
             }
             else{

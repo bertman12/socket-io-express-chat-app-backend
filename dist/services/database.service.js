@@ -31,6 +31,7 @@ class DatabaseService {
             try {
                 if (!this._connection) {
                     yield this.getConnection();
+                    console.log('Reconnected!');
                     yield this.execute(sql, data);
                 }
                 else {

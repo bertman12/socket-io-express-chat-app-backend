@@ -33,11 +33,11 @@ const io = new socket_io_1.Server(httpServer, serverOptions);
 const port = 3000;
 exports.app.use(cors_1.default());
 exports.app.use(express_1.default.json());
-exports.app.use('', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     yield exports.dbService.getConnection();
     next();
-    console.log('All endpoints have been satisified!');
-}), _root_1.default);
+    exports.dbService.releaseConnection();
+}), ..._root_1.default);
 io.use((socket, next) => {
     console.log('Socket connected! SocketID: ', socket.id);
     next();

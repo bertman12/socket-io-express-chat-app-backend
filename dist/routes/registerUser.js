@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const __1 = require("..");
+const user_service_1 = require("../services/user.service");
 const router = express_1.Router();
-router.get('/all', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log('Getting all messages!');
-    const [data] = yield __1.dbService.execute(`SELECT * FROM messages`);
-    res.json(data);
+router.post('/register', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(req.body);
+    yield user_service_1.userService.register(req);
+    res.json('Successfully registered user...');
 }));
 exports.default = router;
