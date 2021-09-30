@@ -10,9 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const user_service_1 = require("../services/user.service");
 const router = express_1.Router();
 router.get('/login', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Successfully logged in...');
-    res.json('Successfully logged in...');
+    const jwtkey = yield user_service_1.userService.login(req.body.email, req.body.password);
+    res.json({ message: 'Successfully logged in...', key: jwtkey });
 }));
 exports.default = router;

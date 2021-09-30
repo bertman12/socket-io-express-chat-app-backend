@@ -10,8 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const user_service_1 = require("../services/user.service");
 const router = express_1.Router();
 router.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    user_service_1.userService.verify();
     console.log('Authorization complete...');
     next();
 }));

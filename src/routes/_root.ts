@@ -10,8 +10,8 @@ export const routes:Router[] =
     messageRoute,
     registerUser,
     //private endpoints
+    userLoginRoute,
     authorizeRoute,
-    userLoginRoute
 ];
 
 export default routes;

@@ -1,5 +1,6 @@
 /** Get and release database connections and execute queries */
 // import { SqlOptions } from "../common/types/sqlOptions";
+import { error } from 'console';
 import mysql from 'mysql2/promise';
 import ConnectionManager from "./connectionManager";
 
@@ -24,7 +25,7 @@ export class DatabaseService{
     /** 
      * Creates a connection when making queries for socketio triggered events, then executes the query. 
     */
-    async execute(sql:string, data?:{}){
+    async execute(sql:string, data?:{}): Promise<any>{
         try {
             if(!this._connection){
                 await this.getConnection();
@@ -42,7 +43,7 @@ export class DatabaseService{
         } catch (error) {
             console.error(error);
         }
-        return ['QUERY FAILED'];
+        throw error('Query execution failed due to either not being to get a connection or unable to make a query. Check data types passed into execute function!');
     }
 }
 

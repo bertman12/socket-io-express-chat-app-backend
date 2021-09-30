@@ -20,14 +20,13 @@ class UserService {
     register(req) {
         return __awaiter(this, void 0, void 0, function* () {
             const hashedPassword = yield bcrypt_1.default.hash(req.body.password, 10);
-            console.log('Password was hashed!');
-            let SQL = `INSERT INTO passwords (userId, password) VALUES(:userId, :password);`;
-            let data = { userId: req.body.userId, password: hashedPassword };
-            index_1.dbService.execute(SQL, data);
-            SQL = `INSERT INTO users 
+            const passSQL = `INSERT INTO passwords (userId, password) VALUES(:userId, :password);`;
+            const passData = { userId: req.body.userId, password: hashedPassword };
+            index_1.dbService.execute(passSQL, passData);
+            const userSQL = `INSERT INTO users 
                (username, email, bio, avatar_image, role, room, server)
         VALUES (:username, :email, :bio, :avatarImage, :role, :room, :server);`;
-            data = {
+            const userData = {
                 username: req.body.username,
                 email: req.body.email,
                 bio: req.body.bio,
@@ -36,11 +35,62 @@ class UserService {
                 room: req.body.room,
                 server: req.body.server
             };
-            index_1.dbService.execute(SQL, data);
+            const [response] = yield index_1.dbService.execute(userSQL, userData);
+            console.log(response);
+            userData.id = response.id;
+            return yield this.login(req.body.email, req.body.password, userData);
         });
     }
-    login() {
-        console.log('User has logged in!');
+    getUser(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const SQL = `SELECT * FROM users WHERE email = :email`;
+            const data = { email: email };
+            const [user] = yield index_1.dbService.execute(SQL, data);
+            return user;
+        });
+    }
+    addUser(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const userSQL = `INSERT INTO users 
+        (username, email, bio, avatar_image, role, room, server)
+        VALUES (:username, :email, :bio, :avatarImage, :role, :room, :server);`;
+            const userData = {
+                username: req.body.username,
+                email: req.body.email,
+                bio: req.body.bio,
+                avatarImage: req.body.avatarImage,
+                role: req.body.role,
+                room: req.body.room,
+                server: req.body.server
+            };
+            return yield index_1.dbService.execute(userSQL, userData);
+        });
+    }
+    verify() {
+    }
+    login(email, password, userData) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let user;
+            let verifiedUserId = -1;
+            if (userData) {
+                user = userData;
+                if (userData.id) {
+                    verifiedUserId = userData.id;
+                }
+            }
+            else {
+                const SQL = `SELECT * FROM users WHERE email = :email`;
+                const data = { email: email };
+                [user] = yield index_1.dbService.execute(SQL, data);
+            }
+            const SQL = `SELECT * FROM passwords WHERE userId = :userId`;
+            const data = { userId: verifiedUserId };
+            const hashedPassword = yield index_1.dbService.execute(SQL, data);
+            const isValid = yield bcrypt_1.default.compare(password, hashedPassword);
+            if (isValid) {
+                console.log('Password is valid');
+            }
+        });
     }
     logout() {
     }

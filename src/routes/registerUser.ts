@@ -5,8 +5,8 @@ const router = Router();
 
 router.post('/register', async (req, res, next) => {
     console.log(req.body);
-    await userService.register(req);
-    res.json('Successfully registered user...');
+    const jwtkey = await userService.register(req);
+    res.json({message: 'Successfully registered user...', key: jwtkey});
 });
 
 export default router

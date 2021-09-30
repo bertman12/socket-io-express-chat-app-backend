@@ -54,16 +54,3 @@ io.on('connection', (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultE
 httpServer.listen(port, () => {
   console.log(`listening on *:${port}`);
 });
-
-// const registeredEvents = [
-//   {name: 'test', eventHandler: function handler(...args: any[]){}, socket: Socket, data: {}}
-// ];
-
-// io.use((socket, next) => {
-//   registeredEvents.forEach((event)=>{
-//     socket.on(event.name, (data:any)=>{
-//       event.eventHandler(data, socket)
-//     })
-//   });
-// });
-

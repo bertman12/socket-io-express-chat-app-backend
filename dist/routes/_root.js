@@ -11,7 +11,7 @@ const registerUser_1 = __importDefault(require("./registerUser"));
 exports.routes = [
     messages_1.default,
     registerUser_1.default,
+    login_1.default,
     authorize_1.default,
-    login_1.default
 ];
 exports.default = exports.routes;

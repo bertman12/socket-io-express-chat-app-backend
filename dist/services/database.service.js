@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DatabaseService = void 0;
+const console_1 = require("console");
 const connectionManager_1 = __importDefault(require("./connectionManager"));
 class DatabaseService {
     constructor() {
@@ -46,7 +47,7 @@ class DatabaseService {
             catch (error) {
                 console.error(error);
             }
-            return ['QUERY FAILED'];
+            throw console_1.error('Query execution failed due to either not being to get a connection or unable to make a query. Check data types passed into execute function!');
         });
     }
 }
