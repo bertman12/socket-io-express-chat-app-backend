@@ -15,38 +15,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.userService = exports.UserService = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const index_1 = require("../index");
+const auth_1 = require("./auth");
 class UserService {
     constructor() { }
     register(req) {
         return __awaiter(this, void 0, void 0, function* () {
-            const hashedPassword = yield bcrypt_1.default.hash(req.body.password, 10);
-            const passSQL = `INSERT INTO passwords (userId, password) VALUES(:userId, :password);`;
-            const passData = { userId: req.body.userId, password: hashedPassword };
-            index_1.dbService.execute(passSQL, passData);
-            const userSQL = `INSERT INTO users 
-               (username, email, bio, avatar_image, role, room, server)
-        VALUES (:username, :email, :bio, :avatarImage, :role, :room, :server);`;
-            const userData = {
-                username: req.body.username,
-                email: req.body.email,
-                bio: req.body.bio,
-                avatarImage: req.body.avatarImage,
-                role: req.body.role,
-                room: req.body.room,
-                server: req.body.server
-            };
-            const [response] = yield index_1.dbService.execute(userSQL, userData);
-            console.log(response);
-            userData.id = response.id;
-            return yield this.login(req.body.email, req.body.password, userData);
+            yield this.addUser(req);
+            const user = yield this.getUser(req.body.email);
+            if (user.id) {
+                yield this.addPassword(req, user.id);
+            }
+            else
+                throw new Error('Unable to add user or password!');
+            const jwtToken = yield this.login(user.email, req.body.password);
+            return jwtToken;
         });
     }
-    getUser(email) {
+    addPassword(req, userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const SQL = `SELECT * FROM users WHERE email = :email`;
-            const data = { email: email };
-            const [user] = yield index_1.dbService.execute(SQL, data);
-            return user;
+            const hashedPassword = yield bcrypt_1.default.hash(req.body.password, 10);
+            const SQL = `INSERT INTO passwords (userId, password) VALUES(:userId, :password);`;
+            const data = { userId: userId, password: hashedPassword };
+            index_1.dbService.execute(SQL, data);
         });
     }
     addUser(req) {
@@ -63,36 +53,59 @@ class UserService {
                 room: req.body.room,
                 server: req.body.server
             };
-            return yield index_1.dbService.execute(userSQL, userData);
+            yield index_1.dbService.execute(userSQL, userData);
         });
     }
-    verify() {
-    }
-    login(email, password, userData) {
+    getUser(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            let user;
-            let verifiedUserId = -1;
-            if (userData) {
-                user = userData;
-                if (userData.id) {
-                    verifiedUserId = userData.id;
+            const SQL = `SELECT * FROM users WHERE email = :email`;
+            const data = { email: email };
+            const [[user]] = yield index_1.dbService.execute(SQL, data);
+            console.log('User retrieved ... ', user);
+            if (user.length > 1) {
+                throw new Error('To many users have the same email!');
+            }
+            return user;
+        });
+    }
+    login(email, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const user = yield this.getUser(email);
+                let passwordVerified = false;
+                console.log('Beggining the login process...', user.id);
+                if (user.id) {
+                    console.log('verifying the password now...');
+                    passwordVerified = yield this.checkPassword(user.id, password);
+                    if (passwordVerified) {
+                        console.log('Verifying the user now...');
+                        return auth_1.authService.jwtify(user);
+                    }
                 }
             }
-            else {
-                const SQL = `SELECT * FROM users WHERE email = :email`;
-                const data = { email: email };
-                [user] = yield index_1.dbService.execute(SQL, data);
-            }
-            const SQL = `SELECT * FROM passwords WHERE userId = :userId`;
-            const data = { userId: verifiedUserId };
-            const hashedPassword = yield index_1.dbService.execute(SQL, data);
-            const isValid = yield bcrypt_1.default.compare(password, hashedPassword);
-            if (isValid) {
-                console.log('Password is valid');
+            catch (err) {
+                console.error('Unable to login!', err);
+                throw new Error('\nUser does not exist! Unable to login!\n');
             }
         });
     }
-    logout() {
+    checkPassword(userId, testInput) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const SQL = `SELECT * FROM passwords WHERE userId = :userId`;
+                const data = { userId: userId };
+                const [[hashedPassword]] = yield index_1.dbService.execute(SQL, data);
+                console.log(hashedPassword.password.toString());
+                let isValid = false;
+                isValid = yield bcrypt_1.default.compare(testInput, hashedPassword.password.toString());
+                console.log('Password is ', isValid);
+                return isValid;
+            }
+            catch (error) {
+                console.error(error);
+                return false;
+            }
+        });
     }
     delete() {
     }

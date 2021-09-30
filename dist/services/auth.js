@@ -29,7 +29,10 @@ dotevn.config();
 class Auth {
     jwtify(payload) {
         const key = process.env.JWT_PHRASE || '';
-        const jwtKey = jsonwebtoken_1.default.sign(payload, key, { expiresIn: '1d' });
+        const jwtKey = jsonwebtoken_1.default.sign(JSON.stringify(payload), key);
+        console.log('jwtifying!');
+        if (!jwtKey)
+            console.log('unable to create jwt');
         return jwtKey;
     }
     verify(input) {
