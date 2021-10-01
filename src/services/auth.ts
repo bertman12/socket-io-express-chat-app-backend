@@ -8,13 +8,17 @@ class Auth{
      * If you set the expiration time to be small will it generate a new jwt if it has expired?
      */
     jwtify(payload: User){
-        const key:jwt.Secret = process.env.JWT_PHRASE || '';
-        const jwtKey = jwt.sign(JSON.stringify(payload), key);
-        console.log('jwtifying!');
-        if(!jwtKey) console.log('unable to create jwt');
-        return jwtKey;
+        if(process.env.JWT_PHRASE){
+            
+            const key:jwt.Secret = process.env.JWT_PHRASE;
+            const jwtKey = jwt.sign(JSON.stringify(payload), key);
+            console.log('jwtifying!');
+            if(!jwtKey) console.log('unable to create jwt');
+            return jwtKey;
+        }
+        return 'NO JWT PHRASE';
     }
-    
+
     /** Request requires a jwt token to pass the verification */
     verify(input:string){
         const token:string = input;
@@ -23,37 +27,3 @@ class Auth{
     }
 }
 export const authService = new Auth();
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * 
- * @param email 
- * @param password 
- * @param payload If registering a user, use the form data to create the payload instead of querying for a user
- */
-// async login(email: string, password: string, payload?: User){
-    
-//     // let userPayload!: User;
-//     // let verifiedUserId: number = -1;
-//     // if(payload){
-//     //     userPayload = payload;
-//     //     if(payload.id){
-//     //         verifiedUserId = payload.id;
-//     //     }
-//     // }
-//     // else{
-//     //     const SQL = `SELECT * FROM users WHERE email = :email`;
-//     //     const data = {email: email};
-//     //     [userPayload] = await dbService.execute(SQL, data);
-        

@@ -28,12 +28,15 @@ const dotevn = __importStar(require("dotenv"));
 dotevn.config();
 class Auth {
     jwtify(payload) {
-        const key = process.env.JWT_PHRASE || '';
-        const jwtKey = jsonwebtoken_1.default.sign(JSON.stringify(payload), key);
-        console.log('jwtifying!');
-        if (!jwtKey)
-            console.log('unable to create jwt');
-        return jwtKey;
+        if (process.env.JWT_PHRASE) {
+            const key = process.env.JWT_PHRASE;
+            const jwtKey = jsonwebtoken_1.default.sign(JSON.stringify(payload), key);
+            console.log('jwtifying!');
+            if (!jwtKey)
+                console.log('unable to create jwt');
+            return jwtKey;
+        }
+        return 'NO JWT PHRASE';
     }
     verify(input) {
         const token = input;
