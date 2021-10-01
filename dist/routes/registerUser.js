@@ -13,7 +13,7 @@ const express_1 = require("express");
 const user_service_1 = require("../services/user.service");
 const router = express_1.Router();
 router.post('/register', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.body);
+    console.log('Data sent to the registration endpoint ... ', req.body);
     const jwtkey = yield user_service_1.userService.register(req);
     res.json({ message: 'Successfully registered user...', key: jwtkey });
 }));

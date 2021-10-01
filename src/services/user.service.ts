@@ -3,7 +3,6 @@ import { User } from '../common/models/user';
 import { dbService } from '../index';
 import express from 'express';
 import { authService } from './auth';
-import { error } from 'console';
 
 export class UserService{
     constructor(){}
@@ -15,6 +14,7 @@ export class UserService{
             await this.addPassword(req, user.id);
         }
         else throw new Error('Unable to add user or password!'); 
+
         const jwtToken = await this.login(user.email, req.body.password);
         return jwtToken;
     }
@@ -46,7 +46,6 @@ export class UserService{
         const SQL = `SELECT * FROM users WHERE email = :email`;
         const data = {email: email};
         const [[user]] = await dbService.execute(SQL, data);
-        console.log('User retrieved ... ', user);
         if(user.length > 1){
             throw new Error('To many users have the same email!');
         }
@@ -60,7 +59,7 @@ export class UserService{
      * @param password 
      * @returns 
      */
-    async login(email: string, password: string){
+    async login(email: string, password: string):Promise<string>{
         try {
             const user:User = await this.getUser(email);
             let passwordVerified: boolean = false;
@@ -75,19 +74,17 @@ export class UserService{
             }
         } catch (err) {
             console.error('Unable to login!', err);
-            throw new Error('\nUser does not exist! Unable to login!\n');
+            // throw new Error('\nUser does not exist! Unable to login!\n');
         }
+        return 'User does not exist! Unable to login!';
     }
 
     async checkPassword(userId: number, testInput:string):Promise<boolean>{
-         //check if password is valid, and if it is then get the user id from the password table
-        //then find and generate your userData using the user id
-        //get the password using the user id to make the query
         try {
             const SQL = `SELECT * FROM passwords WHERE userId = :userId`;
             const data = {userId: userId};
             const [[hashedPassword]] = await dbService.execute(SQL, data); 
-            console.log(hashedPassword.password.toString());
+            console.log('Stored password ... ',hashedPassword.password.toString());
             let isValid:boolean = false;
             isValid = await bcrypt.compare(testInput, hashedPassword.password.toString());
             console.log('Password is ', isValid);

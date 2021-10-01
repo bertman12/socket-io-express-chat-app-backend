@@ -61,7 +61,6 @@ class UserService {
             const SQL = `SELECT * FROM users WHERE email = :email`;
             const data = { email: email };
             const [[user]] = yield index_1.dbService.execute(SQL, data);
-            console.log('User retrieved ... ', user);
             if (user.length > 1) {
                 throw new Error('To many users have the same email!');
             }
@@ -85,8 +84,8 @@ class UserService {
             }
             catch (err) {
                 console.error('Unable to login!', err);
-                throw new Error('\nUser does not exist! Unable to login!\n');
             }
+            return 'User does not exist! Unable to login!';
         });
     }
     checkPassword(userId, testInput) {
@@ -95,7 +94,7 @@ class UserService {
                 const SQL = `SELECT * FROM passwords WHERE userId = :userId`;
                 const data = { userId: userId };
                 const [[hashedPassword]] = yield index_1.dbService.execute(SQL, data);
-                console.log(hashedPassword.password.toString());
+                console.log('Stored password ... ', hashedPassword.password.toString());
                 let isValid = false;
                 isValid = yield bcrypt_1.default.compare(testInput, hashedPassword.password.toString());
                 console.log('Password is ', isValid);
