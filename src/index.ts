@@ -37,6 +37,9 @@ app.use(async (req, res, next)=>{
   dbService.releaseConnection();
 },...routes);
 
+/**
+ * implement middleware for login verification of the socket client before adding messages to the database
+ */
 io.use((socket, next) => {
   console.log('Socket connected! SocketID: ',socket.id);
   next();

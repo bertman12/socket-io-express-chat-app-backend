@@ -39,9 +39,18 @@ class Auth {
         return 'NO JWT PHRASE';
     }
     verify(input) {
-        const token = input;
-        const key = process.env.JWT_PHRASE || '';
-        jsonwebtoken_1.default.verify(token, key);
+        try {
+            const token = input;
+            const test = 'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MywidXNlcm5hbWUiOiJteSB1c2VybmFtZSIsImVtYWlsIjoiZW1haWwzQGVtYWlsLmNvbSIsImJpbyI6Ik15IGJpby4uLiIsImF2YXRhcl9pbWFnZSI6ImltYWdlIHNyYyIsInJvbGUiOjAsInJvb20iOjAsInNlcnZlciI6MH0.eiDvSK5VTzAaRneGRRDPpRga8Titjpfj19WNr-3TbGA';
+            const key = process.env.JWT_PHRASE || '';
+            const payload = jsonwebtoken_1.default.verify(test, key);
+            console.log(payload);
+            return { isValid: true, payload: payload };
+        }
+        catch (error) {
+            console.log('Invalid JWT Token!');
+            return { isValid: false, payload: 'Invalid JWT Token' };
+        }
     }
 }
 exports.authService = new Auth();

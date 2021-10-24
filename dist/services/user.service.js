@@ -47,11 +47,11 @@ class UserService {
             const userData = {
                 username: req.body.username,
                 email: req.body.email,
-                bio: req.body.bio,
-                avatarImage: req.body.avatarImage,
-                role: req.body.role,
-                room: req.body.room,
-                server: req.body.server
+                bio: req.body.bio || 'No bio...',
+                avatarImage: req.body.avatarImage || 'No src',
+                role: req.body.role || 0,
+                room: req.body.room || 0,
+                server: req.body.server || 0
             };
             yield index_1.dbService.execute(userSQL, userData);
         });
@@ -72,12 +72,9 @@ class UserService {
             try {
                 const user = yield this.getUser(email);
                 let passwordVerified = false;
-                console.log('Beggining the login process...', user.id);
                 if (user.id) {
-                    console.log('verifying the password now...');
                     passwordVerified = yield this.checkPassword(user.id, password);
                     if (passwordVerified) {
-                        console.log('Verifying the user now...');
                         return auth_1.authService.jwtify(user);
                     }
                 }
@@ -106,7 +103,18 @@ class UserService {
             }
         });
     }
-    delete() {
+    verifyToken(token, email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const payload = auth_1.authService.verify(token);
+            if (payload.isValid) {
+                console.log('Valid Token! User has been verified to exist in the database');
+            }
+            else {
+                console.log('Invalid Token!');
+            }
+        });
+    }
+    deleteUser() {
     }
 }
 exports.UserService = UserService;

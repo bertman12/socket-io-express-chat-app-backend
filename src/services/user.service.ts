@@ -7,14 +7,13 @@ import { authService } from './auth';
 export class UserService{
     constructor(){}
 
-    async register(req: express.Request){
+    async register(req: express.Request):Promise<string>{
         await this.addUser(req);
         const user:User = await this.getUser(req.body.email);
         if(user.id){
             await this.addPassword(req, user.id);
         }
         else throw new Error('Unable to add user or password!'); 
-
         const jwtToken = await this.login(user.email, req.body.password);
         return jwtToken;
     }
@@ -33,11 +32,11 @@ export class UserService{
         const userData: User = {
             username: req.body.username,
             email: req.body.email,          
-            bio: req.body.bio,            
-            avatarImage: req.body.avatarImage,   
-            role: req.body.role,           
-            room: req.body.room,           
-            server: req.body.server  
+            bio: req.body.bio || 'No bio...',            
+            avatarImage: req.body.avatarImage || 'No src',   
+            role: req.body.role || 0,           
+            room: req.body.room || 0,           
+            server: req.body.server || 0  
         };
         await dbService.execute(userSQL, userData);
     }
@@ -63,12 +62,9 @@ export class UserService{
         try {
             const user:User = await this.getUser(email);
             let passwordVerified: boolean = false;
-            console.log('Beggining the login process...', user.id);
             if(user.id){
-                console.log('verifying the password now...');
                 passwordVerified = await this.checkPassword(user.id, password);
                 if(passwordVerified){
-                    console.log('Verifying the user now...');
                     return authService.jwtify(user);
                 }
             }
@@ -95,7 +91,17 @@ export class UserService{
         }
     }
 
-    delete(){
+    async verifyToken(token: string, email: string){
+        const payload = authService.verify(token);
+        if(payload.isValid){
+            console.log('Valid Token! User has been verified to exist in the database');
+        }
+        else{
+            console.log('Invalid Token!');
+        }
+    }
+
+    deleteUser(){
 
     }
 }
